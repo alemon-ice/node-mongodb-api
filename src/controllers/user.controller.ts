@@ -9,6 +9,7 @@ class UserController {
       user: {
         _id: user._id,
         name: user.name,
+        avatar: user.avatar,
       },
     };
 
