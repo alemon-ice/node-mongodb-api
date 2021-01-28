@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
-import userRoute from './routes/user.route'
+import userRoute from "./routes/user.route";
 
 export class App {
   private express: express.Application;
@@ -40,6 +40,6 @@ export class App {
   }
 
   private routes(): void {
-    this.express.use('/users', userRoute)
+    this.express.use("/users", userRoute);
   }
 }
