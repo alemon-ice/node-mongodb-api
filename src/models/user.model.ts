@@ -4,6 +4,7 @@ import { UserInterface } from "../interfaces/user.interface";
 
 interface UserModel extends UserInterface, Document {
   _id: string | ObjectId;
+  comparePasswords(password: string): Promise<boolean>;
 }
 
 const UserSchema = new Schema({

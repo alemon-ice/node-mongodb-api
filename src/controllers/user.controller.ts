@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import userModel from "../models/user.model";
 
 class UserController {
@@ -14,6 +15,24 @@ class UserController {
     };
 
     return res.json(response);
+  }
+
+  public async authenticate(req: Request, res: Response): Promise<Response> {
+    const { name, password } = req.body;
+
+    const user = await userModel.findOne({ name });
+
+    if (!user) {
+      return res.status(400).json({ message: "Usuário não cadastrado." });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+      return res.status(400).json({ message: "Senha inválida." });
+    }
+
+    return res.json(user);
   }
 }
 
