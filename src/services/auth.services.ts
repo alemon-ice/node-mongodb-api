@@ -15,4 +15,4 @@ class AuthServices {
   }
 }
 
-export default AuthServices;
+export default new AuthServices();

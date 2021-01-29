@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import userModel from "../models/user.model";
-import AuthServices from "../services/auth.services";
+import authServices from "../services/auth.services";
 
 class UserController {
   public async register(req: Request, res: Response): Promise<Response> {
@@ -20,8 +20,6 @@ class UserController {
 
   public async authenticate(req: Request, res: Response): Promise<Response> {
     const { name, password } = req.body;
-
-    const authServices = new AuthServices();
 
     const user = await userModel.findOne({ name });
 
