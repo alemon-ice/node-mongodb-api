@@ -5,8 +5,7 @@ class MessageController {
   public async send(req: Request, res: Response): Promise<Response> {
     const message = await messageModel.create({
       text: req.body.text,
-      // sender: req.body.sender,
-      sender: "",
+      sender: req.user._id,
       receiver: req.params.id,
     });
 
