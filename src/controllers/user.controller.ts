@@ -3,6 +3,12 @@ import bcrypt from "bcrypt";
 import userModel from "../models/user.model";
 import authServices from "../services/auth.services";
 import userServices from "../services/user.services";
+import messageServices from "../services/message.services";
+import messageModel from "../models/message.model";
+import {
+  UserInterface,
+  MessageUserInterface,
+} from "../interfaces/user.interface";
 
 class UserController {
   public async register(req: Request, res: Response): Promise<Response> {
@@ -53,21 +59,34 @@ class UserController {
   public async list(req: Request, res: Response): Promise<Response> {
     const userId = req.user._id;
 
-    const users = await userModel.find({ _id: { $ne: userId } });
+    const users: UserInterface[] = await userModel.find({
+      _id: { $ne: userId },
+    });
 
-    const usersWithoutPassword = users.map((user) =>
-      userServices.UserWithoutPassword(user)
+    const usersMessage: MessageUserInterface[] = await Promise.all(
+      users.map((user) => {
+        return messageModel
+          .findChat(String(userId), String(user._id))
+          .sort("-createdAt")
+          .limit(1)
+          .map((messages) =>
+            messageServices.getResultUserMessage(messages, user)
+          );
+      })
     );
 
-    return res.json(usersWithoutPassword);
+    const orderedMessages = messageServices.returnOrderedMessages(usersMessage);
+
+    return res.json(orderedMessages);
   }
 
   public async listAllUsers(req: Request, res: Response): Promise<Response> {
-    const users = await userModel.find();
+    const users: UserInterface[] = await userModel.find();
 
-    const usersWithoutPassword = users.map((user) =>
-      userServices.UserWithoutPassword(user)
-    );
+    const usersWithoutPassword: Omit<
+      UserInterface,
+      "password"
+    >[] = users.map((user) => userServices.UserWithoutPassword(user));
 
     return res.json(usersWithoutPassword);
   }
