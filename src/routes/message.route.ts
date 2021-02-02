@@ -9,5 +9,10 @@ messageRoute.post(
   authMiddleware.checkUserByToken,
   messageController.send
 );
+messageRoute.get(
+  "/:id",
+  authMiddleware.checkUserByToken,
+  messageController.list
+);
 
 export default messageRoute;

@@ -18,6 +18,30 @@ class MessageController {
 
     return res.json(message);
   }
+
+  public async list(req: Request, res: Response): Promise<Response> {
+    const idUserLogged = req.user._id;
+    const idUserChat = req.params.id;
+
+    const messages = await messageModel
+      .find({
+        $or: [
+          { $and: [{ sender: idUserLogged }, { receiver: idUserChat }] },
+          { $and: [{ sender: idUserChat }, { receiver: idUserLogged }] },
+        ],
+      })
+      .sort("createdAt");
+
+    const messagesChat = messages.map((message) => {
+      return {
+        text: message.text,
+        createdAt: message.createdAt,
+        isSender: message.sender == String(idUserLogged),
+      };
+    });
+
+    return res.json(messagesChat);
+  }
 }
 
 export default new MessageController();
